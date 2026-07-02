@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#05060d" />
+  <title>ZETA LEGACY — 360° Cinematic Space Dogfight</title>
+  <meta name="description" content="ZETA LEGACY is a 360° third-person space dogfight. Pilot your ship, hunt alien drones, survive boss waves. Free download for Android." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ZETA LEGACY — Space Dogfight" />
+  <meta property="og:description" content="A 360° cinematic space dogfight. Hunt the swarm. Free for Android." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Google model-viewer: robust GLB display with orbit + lighting -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+</head>
+<body>
+  <canvas id="starfield" aria-hidden="true"></canvas>
+  <div class="aurora" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <header class="nav glass" id="nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark">Z</span>
+      <span class="brand-name">ZETA<i>LEGACY</i></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#hangar">Hangar</a>
+      <a href="#features">Combat</a>
+      <a href="#download">Download</a>
+    </nav>
+    <a href="#download" class="btn btn-mini">Get the Game</a>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-copy">
+      <span class="eyebrow">360° THIRD-PERSON SPACE DOGFIGHT</span>
+      <h1 class="title">ZETA<br /><span class="title-accent">LEGACY</span></h1>
+      <p class="lede">
+        The swarm came from the dark between stars. Strap in, kill your throttle,
+        drag the scope and <strong>burn them down</strong> across a 360° cinematic
+        battlefield. No rails. No mercy.
+      </p>
+      <div class="cta-row">
+        <a href="#download" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg>
+          Download for Android
+        </a>
+        <a href="#hangar" class="btn btn-ghost">Inspect the Ships</a>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b>360°</b><span>free flight</span></div>
+        <div class="stat"><b>∞</b><span>enemy waves</span></div>
+        <div class="stat"><b>BOSS</b><span>every 5th wave</span></div>
+      </div>
+    </div>
+
+    <div class="hero-stage">
+      <model-viewer
+        id="hero-model"
+        src="models/spaceship.glb"
+        alt="Zeta Legacy player spaceship"
+        camera-controls
+        auto-rotate
+        auto-rotate-delay="0"
+        rotation-per-second="18deg"
+        interaction-prompt="none"
+        camera-orbit="35deg 78deg 3.2m"
+        field-of-view="32deg"
+        exposure="1.15"
+        shadow-intensity="0.9"
+        shadow-softness="1"
+        environment-image="legacy"
+        tone-mapping="aces"
+        disable-zoom
+        loading="eager">
+        <div class="mv-loader" slot="progress-bar">
+          <div class="mv-spinner"></div>
+        </div>
+      </model-viewer>
+      <div class="stage-glow" aria-hidden="true"></div>
+      <span class="stage-tag">DRAG TO ORBIT · PLAYER SHIP</span>
+    </div>
+  </section>
+
+  <!-- HANGAR -->
+  <section class="section" id="hangar">
+    <div class="section-head">
+      <span class="eyebrow">THE HANGAR</span>
+      <h2>Real-time 3D, straight in your browser</h2>
+      <p>These are the actual in-game assets. Drag to spin them, study every panel line before you fly.</p>
+    </div>
+
+    <div class="hangar-grid">
+      <article class="ship-card glass">
+        <div class="ship-stage">
+          <model-viewer
+            src="models/spaceship.glb"
+            alt="Player interceptor"
+            camera-controls auto-rotate rotation-per-second="22deg"
+            interaction-prompt="none"
+            camera-orbit="25deg 75deg auto"
+            exposure="1.1" shadow-intensity="0.7"
+            environment-image="legacy" tone-mapping="aces" disable-zoom>
+          </model-viewer>
+        </div>
+        <div class="ship-meta">
+          <h3>Interceptor <span class="badge badge-ally">YOU</span></h3>
+          <p>Your bird. Boost, brake, barrel into a dash to dodge fire, then drag the scope and let it rip.</p>
+          <ul class="spec">
+            <li><span>Top speed</span><b>boost + dash</b></li>
+            <li><span>Loadout</span><b>rapid · spread · shield</b></li>
+            <li><span>Special</span><b>smart bomb</b></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="ship-card glass">
+        <div class="ship-stage">
+          <model-viewer
+            src="models/drone.glb"
+            alt="Alien attack drone"
+            camera-controls auto-rotate rotation-per-second="22deg"
+            interaction-prompt="none"
+            camera-orbit="-30deg 72deg auto"
+            exposure="1.1" shadow-intensity="0.7"
+            environment-image="legacy" tone-mapping="aces" disable-zoom>
+          </model-viewer>
+        </div>
+        <div class="ship-meta">
+          <h3>Hostile Drone <span class="badge badge-enemy">THREAT</span></h3>
+          <p>The swarm. Gunners hang back and shoot, rushers kamikaze, tanks soak three times the punishment.</p>
+          <ul class="spec">
+            <li><span>Variants</span><b>gunner · rusher · tank</b></li>
+            <li><span>AI</span><b>joust · dodge · swarm</b></li>
+            <li><span>Drops</span><b>random power-ups</b></li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <div class="section-head">
+      <span class="eyebrow">THE COMBAT</span>
+      <h2>Built to feel alive</h2>
+      <p>Every kill kicks the screen, stacks your combo and pulls you deeper into the fight.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature glass">
+        <div class="f-icon">🎯</div>
+        <h3>Skill-based scope aiming</h3>
+        <p>Tap fire and a scope snaps onto your screen. Drag it onto a target — no auto-zoom, no hand-holding. Pure aim.</p>
+      </div>
+      <div class="feature glass">
+        <div class="f-icon">🛰️</div>
+        <h3>Drones that actually fight back</h3>
+        <p>Enemies joust, peel off, dodge and regroup. Three archetypes mean no two waves play the same.</p>
+      </div>
+      <div class="feature glass">
+        <div class="f-icon">⚡</div>
+        <h3>Power-ups on the drop</h3>
+        <p>Shred drones and they spill timed pickups — rapid fire, spread shot, magnetic shields. Grab them mid-flight.</p>
+      </div>
+      <div class="feature glass">
+        <div class="f-icon">💀</div>
+        <h3>Boss waves</h3>
+        <p>Every fifth wave a boss warps in — strafing, volley-firing, health-barred. Burn it down or get burned.</p>
+      </div>
+      <div class="feature glass">
+        <div class="f-icon">🔥</div>
+        <h3>Combo & juice</h3>
+        <p>Chain kills for a rising multiplier. Screen shake, hitstop, score pops and explosions sell every hit.</p>
+      </div>
+      <div class="feature glass">
+        <div class="f-icon">🚀</div>
+        <h3>Permanent upgrades</h3>
+        <p>Bank credits between runs to boost fire rate, hull, damage and bomb count. Come back stronger.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section class="section download" id="download">
+    <div class="download-card glass">
+      <div class="dl-glow" aria-hidden="true"></div>
+      <span class="eyebrow">FREE · ANDROID</span>
+      <h2>Get my copy of <span class="title-accent">ZETA LEGACY</span></h2>
+      <p class="dl-lede">One tap. No account. Drop into the dogfight in under a minute.</p>
+
+      <a href="downloads/ZetaLegacy.apk" class="btn btn-primary btn-big" download id="dl-btn">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg>
+        Download APK
+        <small id="dl-size">Android 7.0+</small>
+      </a>
+
+      <div class="dl-meta">
+        <div><b>Platform</b><span>Android (.apk)</span></div>
+        <div><b>Engine</b><span>Godot 4.6</span></div>
+        <div><b>Price</b><span>Free</span></div>
+      </div>
+
+      <details class="dl-note glass">
+        <summary>Installing the APK (sideload)</summary>
+        <ol>
+          <li>Download the APK to your phone.</li>
+          <li>Open it — Android may ask to allow installs from this source. Allow it.</li>
+          <li>Tap install, then launch <b>Zeta Legacy</b>. Fly.</li>
+        </ol>
+        <p class="muted">This is a direct community build, not from the Play Store, so the "unknown source" prompt is normal.</p>
+      </details>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="brand">
+      <span class="brand-mark">Z</span>
+      <span class="brand-name">ZETA<i>LEGACY</i></span>
+    </div>
+    <p class="muted">A 360° cinematic space dogfight · Built with Godot 4.6</p>
+    <p class="muted small">3D viewer powered by &lt;model-viewer&gt; · Models are the real in-game assets.</p>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

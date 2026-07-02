@@ -1,0 +1,48 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_drone.gd" id="1"]
+[ext_resource type="PackedScene" path="res://models/drone.glb" id="2"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_drone"]
+radius = 2.0
+
+[sub_resource type="SphereMesh" id="Core_mesh"]
+radius = 0.9
+height = 1.8
+radial_segments = 10
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="Mat_core"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_color = Color(0.3, 0.9, 1, 1)
+emission_enabled = true
+emission = Color(0.3, 0.9, 1, 1)
+emission_energy_multiplier = 4.0
+
+[node name="EnemyDrone" type="Area3D" groups=["enemy"]]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1")
+move_speed = 16.0
+health = 3
+score_value = 100
+can_shoot = true
+fire_cooldown = 1.4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_drone")
+
+[node name="ModelPivot" type="Node3D" parent="."]
+
+; Model nose is -X; rotate -90° about Y so it faces -Z (forward), scaled to ~3m.
+[node name="DroneModel" parent="ModelPivot" instance=ExtResource("2")]
+transform = Transform3D(0, 0, 3, 0, 3, 0, -3, 0, 0, 0, 0, 0)
+
+[node name="Core" type="MeshInstance3D" parent="ModelPivot"]
+mesh = SubResource("Core_mesh")
+surface_material_override/0 = SubResource("Mat_core")
+
+[node name="FireTimer" type="Timer" parent="."]
+wait_time = 1.4
+one_shot = true

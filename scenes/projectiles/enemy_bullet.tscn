@@ -1,0 +1,32 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/projectiles/projectile.gd" id="1"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(0.1, 0.1, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="Mat_enemy_bullet"]
+transparency = 1
+albedo_color = Color(1.0, 0.2, 0.2, 0.9)
+emission_enabled = true
+emission = Color(1.0, 0.1, 0.1, 1.0)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bullet"]
+size = Vector3(0.3, 0.3, 1.0)
+
+[node name="EnemyBullet" type="Area3D" groups=["enemy_bullet"]]
+collision_layer = 8
+collision_mask = 17
+script = ExtResource("1")
+speed = 18.0
+damage = 1
+direction = Vector3(0, 0, 1)
+max_lifetime = 4.0
+
+[node name="TrailMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_1")
+surface_material_override/0 = SubResource("Mat_enemy_bullet")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_bullet")

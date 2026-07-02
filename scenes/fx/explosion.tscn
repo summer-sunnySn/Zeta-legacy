@@ -1,0 +1,67 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/fx/explosion.gd" id="1"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_spark"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+emission_enabled = true
+emission = Color(1.0, 0.6, 0.2, 1)
+emission_energy_multiplier = 4.0
+billboard_mode = 1
+billboard_keep_scale = true
+transparency = 1
+blend_mode = 1
+
+[sub_resource type="QuadMesh" id="Quad_spark"]
+size = Vector2(0.7, 0.7)
+
+[sub_resource type="Gradient" id="Grad_fire"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(1, 0.97, 0.7, 1, 1, 0.5, 0.15, 1, 0.6, 0.1, 0.05, 0)
+
+[sub_resource type="StandardMaterial3D" id="Mat_shock"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_color = Color(1.0, 0.7, 0.35, 0.7)
+emission_enabled = true
+emission = Color(1.0, 0.6, 0.25, 1)
+emission_energy_multiplier = 3.0
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+
+[sub_resource type="SphereMesh" id="Sphere_shock"]
+radius = 1.0
+height = 2.0
+radial_segments = 16
+rings = 8
+
+[node name="Explosion" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Particles" type="CPUParticles3D" parent="."]
+emitting = false
+amount = 28
+lifetime = 0.65
+one_shot = true
+explosiveness = 1.0
+mesh = SubResource("Quad_spark")
+material_override = SubResource("Mat_spark")
+direction = Vector3(0, 0, 0)
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 9.0
+initial_velocity_max = 22.0
+scale_amount_min = 1.5
+scale_amount_max = 4.0
+color_ramp = SubResource("Grad_fire")
+
+[node name="Shockwave" type="MeshInstance3D" parent="."]
+mesh = SubResource("Sphere_shock")
+surface_material_override/0 = SubResource("Mat_shock")
+
+[node name="Flash" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.7, 0.3, 1)
+light_energy = 11.0
+omni_range = 11.0

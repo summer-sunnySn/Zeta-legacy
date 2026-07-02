@@ -1,0 +1,141 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/mission/mission.gd" id="1_mis"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_ply"]
+[ext_resource type="PackedScene" path="res://scenes/camera/camera_rig.tscn" id="3_cam"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_hud.tscn" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/fx/starfield.gd" id="5_star"]
+[ext_resource type="Script" path="res://scripts/mission/planet.gd" id="6_pln"]
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+sky_top_color = Color(0.02, 0.015, 0.06, 1)
+sky_horizon_color = Color(0.10, 0.05, 0.22, 1)
+ground_bottom_color = Color(0.01, 0.008, 0.04, 1)
+ground_horizon_color = Color(0.07, 0.04, 0.15, 1)
+energy_multiplier = 1.3
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 2
+ambient_light_color = Color(0.5, 0.55, 0.7, 1)
+ambient_light_energy = 1.5
+tonemap_mode = 3
+tonemap_white = 6.0
+glow_enabled = true
+glow_intensity = 0.9
+glow_bloom = 0.3
+glow_hdr_threshold = 0.9
+glow_blend_mode = 1
+
+[node name="Mission" type="Node3D"]
+script = ExtResource("1_mis")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.86, -0.25, 0.44, 0, 0.87, 0.49, -0.5, -0.42, 0.75, 0, 30, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 2.6
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.7, 0.3, -0.64, 0, 0.9, 0.42, 0.71, 0.3, -0.63, 0, -10, 0)
+light_color = Color(0.55, 0.6, 1, 1)
+light_energy = 1.2
+
+[node name="Starfield" type="MultiMeshInstance3D" parent="."]
+script = ExtResource("5_star")
+star_count = 900
+shell_radius = 500.0
+
+[node name="Planet" type="Node3D" parent="."]
+script = ExtResource("6_pln")
+
+[node name="Player" parent="." instance=ExtResource("2_ply")]
+
+[node name="CameraRig" parent="." instance=ExtResource("3_cam")]
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+
+[node name="GameHUD" parent="HUDLayer" instance=ExtResource("4_hud")]
+
+[node name="ObjectiveLayer" type="CanvasLayer" parent="."]
+
+[node name="Objective" type="Label" parent="ObjectiveLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -360.0
+offset_top = 54.0
+offset_right = 360.0
+offset_bottom = 96.0
+text = "OBJECTIVE"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+
+[node name="Banner" type="Label" parent="ObjectiveLayer"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -50.0
+offset_right = 400.0
+offset_bottom = 50.0
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 54
+
+[node name="DialogueLayer" type="CanvasLayer" parent="."]
+
+[node name="Box" type="Panel" parent="DialogueLayer"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -190.0
+offset_right = -40.0
+offset_bottom = -24.0
+self_modulate = Color(0.05, 0.07, 0.12, 0.85)
+
+[node name="Speaker" type="Label" parent="DialogueLayer/Box"]
+offset_left = 24.0
+offset_top = 14.0
+offset_right = 600.0
+offset_bottom = 46.0
+text = "SPEAKER"
+theme_override_font_sizes/font_size = 22
+
+[node name="Line" type="Label" parent="DialogueLayer/Box"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 52.0
+offset_right = -24.0
+offset_bottom = -16.0
+text = ""
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 26
+
+[node name="Hint" type="Label" parent="DialogueLayer/Box"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -34.0
+offset_right = -16.0
+offset_bottom = -8.0
+text = "tap to continue ▸"
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 15

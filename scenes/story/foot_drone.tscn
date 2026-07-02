@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/story/foot_drone.gd" id="1_fd"]
+[ext_resource type="PackedScene" path="res://models/drone.glb" id="2_model"]
+
+[sub_resource type="SphereShape3D" id="Shape_drone"]
+radius = 1.6
+
+[sub_resource type="SphereMesh" id="Mesh_core"]
+radius = 0.7
+height = 1.4
+radial_segments = 10
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="Mat_core"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_color = Color(1.0, 0.25, 0.2, 1)
+emission_enabled = true
+emission = Color(1.0, 0.2, 0.15, 1)
+emission_energy_multiplier = 4.0
+
+[node name="FootDrone" type="Area3D" groups=["enemy"]]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_fd")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("Shape_drone")
+
+[node name="ModelPivot" type="Node3D" parent="."]
+
+[node name="DroneModel" parent="ModelPivot" instance=ExtResource("2_model")]
+transform = Transform3D(0, 0, 2.2, 0, 2.2, 0, -2.2, 0, 0, 0, 0, 0)
+
+[node name="Core" type="MeshInstance3D" parent="ModelPivot"]
+mesh = SubResource("Mesh_core")
+surface_material_override/0 = SubResource("Mat_core")
+
+[node name="FireTimer" type="Timer" parent="."]

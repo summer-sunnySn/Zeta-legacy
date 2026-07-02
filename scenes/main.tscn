@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://b602cbafkfgfj"]
+
+[ext_resource type="Script" uid="uid://ck3wcatb057u8" path="res://scripts/main.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2"]
+[ext_resource type="Script" uid="uid://bfiuusqeonsnh" path="res://scripts/enemies/enemy_spawner.gd" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/camera/camera_rig.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_hud.tscn" id="5"]
+[ext_resource type="Script" uid="uid://btyw3majr0t2x" path="res://scripts/fx/starfield.gd" id="6"]
+[ext_resource type="Script" uid="uid://bx6mpr0y41wcw" path="res://scripts/fx/debris_field.gd" id="7"]
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_space"]
+sky_top_color = Color(0.015, 0.01, 0.05, 1)
+sky_horizon_color = Color(0.08, 0.04, 0.18, 1)
+sky_curve = 0.12
+ground_bottom_color = Color(0.01, 0.008, 0.04, 1)
+ground_horizon_color = Color(0.06, 0.03, 0.13, 1)
+energy_multiplier = 1.2
+
+[sub_resource type="Sky" id="Sky_nebula"]
+sky_material = SubResource("Sky_space")
+radiance_size = 4
+
+[sub_resource type="Environment" id="Env_space"]
+background_mode = 2
+sky = SubResource("Sky_nebula")
+ambient_light_source = 2
+ambient_light_color = Color(0.45, 0.5, 0.65, 1)
+ambient_light_energy = 1.4
+reflected_light_source = 2
+tonemap_mode = 3
+tonemap_white = 6.0
+glow_enabled = true
+glow_intensity = 0.85
+glow_bloom = 0.25
+glow_hdr_threshold = 0.9
+glow_blend_mode = 1
+fog_enabled = true
+fog_light_color = Color(0.08, 0.07, 0.16, 1)
+fog_density = 0.0008
+fog_sky_affect = 0.0
+
+[node name="Main" type="Node3D" unique_id=1425523583]
+script = ExtResource("1")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1713332617]
+environment = SubResource("Env_space")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="." unique_id=1678130110]
+transform = Transform3D(0.86, -0.25, 0.44, 0, 0.87, 0.49, -0.5, -0.42, 0.75, 0, 30, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 3.0
+
+[node name="FillLight" type="DirectionalLight3D" parent="." unique_id=2129516799]
+transform = Transform3D(-0.7, 0.3, -0.64, 0, 0.9, 0.42, 0.71, 0.3, -0.63, 0, -10, 0)
+light_color = Color(0.55, 0.6, 1, 1)
+light_energy = 1.3
+
+[node name="RimLight" type="DirectionalLight3D" parent="." unique_id=1617587818]
+transform = Transform3D(0.5, 0.3, -0.81, 0, 0.94, 0.34, 0.87, -0.17, 0.46, 0, 0, -20)
+light_color = Color(0.7, 0.8, 1, 1)
+
+[node name="Starfield" type="MultiMeshInstance3D" parent="." unique_id=1725684379]
+script = ExtResource("6")
+
+[node name="DebrisField" type="MultiMeshInstance3D" parent="." unique_id=639152516]
+script = ExtResource("7")
+
+[node name="Player" parent="." unique_id=28925899 instance=ExtResource("2")]
+
+[node name="CameraRig" parent="." unique_id=1274785089 instance=ExtResource("4")]
+
+[node name="EnemySpawner" type="Node3D" parent="." unique_id=201414904]
+script = ExtResource("3")
+
+[node name="WaveTimer" type="Timer" parent="EnemySpawner" unique_id=1447195669]
+wait_time = 3.0
+one_shot = true
+
+[node name="HUDLayer" type="CanvasLayer" parent="." unique_id=2012751417]
+
+[node name="GameHUD" parent="HUDLayer" unique_id=5431773 instance=ExtResource("5")]

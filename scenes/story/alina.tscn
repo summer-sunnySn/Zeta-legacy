@@ -1,0 +1,108 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/story/alina.gd" id="1_alina"]
+
+[sub_resource type="CapsuleShape3D" id="Shape_body"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_suit"]
+albedo_color = Color(0.86, 0.88, 0.92, 1)
+metallic = 0.2
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="Mat_accent"]
+albedo_color = Color(1.0, 0.5, 0.12, 1)
+emission_enabled = true
+emission = Color(1.0, 0.45, 0.1, 1)
+emission_energy_multiplier = 1.4
+
+[sub_resource type="StandardMaterial3D" id="Mat_visor"]
+albedo_color = Color(0.1, 0.7, 1.0, 1)
+emission_enabled = true
+emission = Color(0.3, 0.85, 1.0, 1)
+emission_energy_multiplier = 3.0
+metallic = 0.6
+roughness = 0.2
+
+[sub_resource type="CapsuleMesh" id="Mesh_body"]
+radius = 0.35
+height = 1.55
+
+[sub_resource type="SphereMesh" id="Mesh_helmet"]
+radius = 0.3
+height = 0.6
+
+[sub_resource type="BoxMesh" id="Mesh_visor"]
+size = Vector3(0.34, 0.18, 0.12)
+
+[sub_resource type="BoxMesh" id="Mesh_plss"]
+size = Vector3(0.5, 0.6, 0.28)
+
+[sub_resource type="BoxMesh" id="Mesh_flash"]
+size = Vector3(0.18, 0.18, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="Mat_flash"]
+shading_mode = 0
+emission_enabled = true
+emission = Color(1.0, 0.9, 0.4, 1)
+emission_energy_multiplier = 6.0
+albedo_color = Color(1.0, 0.95, 0.6, 1)
+
+[sub_resource type="SphereMesh" id="Mesh_shield"]
+radius = 1.3
+height = 2.6
+radial_segments = 24
+rings = 12
+
+[sub_resource type="StandardMaterial3D" id="Mat_shield"]
+transparency = 1
+albedo_color = Color(0.35, 0.7, 1.0, 0.22)
+emission_enabled = true
+emission = Color(0.4, 0.8, 1.0, 1)
+emission_energy_multiplier = 1.6
+cull_mode = 2
+
+[node name="Alina" type="CharacterBody3D" groups=["player"]]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_alina")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("Shape_body")
+
+[node name="MeshPivot" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+mesh = SubResource("Mesh_body")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="Helmet" type="MeshInstance3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+mesh = SubResource("Mesh_helmet")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="Visor" type="MeshInstance3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, -0.22)
+mesh = SubResource("Mesh_visor")
+surface_material_override/0 = SubResource("Mat_visor")
+
+[node name="PLSS" type="MeshInstance3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0.32)
+mesh = SubResource("Mesh_plss")
+surface_material_override/0 = SubResource("Mat_accent")
+
+[node name="Muzzle" type="Node3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, 1.05, -0.6)
+
+[node name="Flash" type="MeshInstance3D" parent="MeshPivot/Muzzle"]
+mesh = SubResource("Mesh_flash")
+surface_material_override/0 = SubResource("Mat_flash")
+
+[node name="ShieldBubble" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+visible = false
+mesh = SubResource("Mesh_shield")
+surface_material_override/0 = SubResource("Mat_shield")

@@ -1,0 +1,85 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/story/chapter1_intro.gd" id="1_intro"]
+[ext_resource type="Script" path="res://scripts/fx/starfield.gd" id="2_stars"]
+[ext_resource type="Script" path="res://scripts/story/subtitle_box.gd" id="3_subs"]
+
+; ─── Deep-space environment (no atmosphere, pitch black) ────────────────────
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+sky_top_color     = Color(0.001, 0.001, 0.002, 1)
+sky_horizon_color = Color(0.002, 0.002, 0.004, 1)
+ground_bottom_color  = Color(0.0005, 0.0005, 0.001, 1)
+ground_horizon_color = Color(0.002, 0.002, 0.004, 1)
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode       = 2
+sky                   = SubResource("Sky")
+ambient_light_source  = 3
+ambient_light_color   = Color(0.05, 0.05, 0.08, 1)
+ambient_light_energy  = 0.12
+glow_enabled          = true
+glow_intensity        = 0.40
+glow_strength         = 0.9
+glow_bloom            = 0.10
+fog_enabled           = false
+ssr_enabled           = false
+ssao_enabled          = false
+sdfgi_enabled         = false
+
+; ─── Scene Graph ────────────────────────────────────────────────────────────
+[node name="Chapter1Intro" type="Node3D"]
+script = ExtResource("1_intro")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8, -0.2, 0.56, 0.0, 0.94, 0.34, -0.6, -0.27, 0.75, 0, 0, 0)
+light_energy   = 1.8
+light_color    = Color(1.0, 0.98, 0.95, 1)
+shadow_enabled = false
+
+[node name="Starfield" type="MultiMeshInstance3D" parent="."]
+script = ExtResource("2_stars")
+star_count   = 900
+shell_radius = 500.0
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 26)
+fov  = 70.0
+near = 0.1
+far  = 800.0
+
+; ── UI overlay (subtitles + fade + skip hint) ───────────────────────────────
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="Fade" type="ColorRect" parent="UILayer"]
+anchors_preset = 15
+anchor_right   = 1.0
+anchor_bottom  = 1.0
+color          = Color(0, 0, 0, 1)
+mouse_filter   = 2
+
+[node name="SubtitleBox" type="Control" parent="UILayer"]
+anchors_preset = 15
+anchor_right   = 1.0
+anchor_bottom  = 1.0
+mouse_filter   = 2
+script = ExtResource("3_subs")
+
+[node name="SkipHint" type="Label" parent="UILayer"]
+anchors_preset = 3
+anchor_left    = 1.0
+anchor_top     = 1.0
+anchor_right   = 1.0
+anchor_bottom  = 1.0
+offset_left    = -150.0
+offset_top     = -40.0
+offset_right   = -16.0
+offset_bottom  = -16.0
+text           = "tap to skip"
+horizontal_alignment = 2
+modulate       = Color(1, 1, 1, 0.5)

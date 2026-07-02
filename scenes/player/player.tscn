@@ -1,0 +1,103 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player.gd" id="1"]
+[ext_resource type="PackedScene" path="res://models/spaceship.glb" id="2"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_player"]
+radius = 1.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_engine"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+emission_enabled = true
+emission = Color(0.4, 0.8, 1.0, 1)
+emission_energy_multiplier = 5.0
+billboard_mode = 1
+billboard_keep_scale = true
+transparency = 1
+blend_mode = 1
+
+[sub_resource type="QuadMesh" id="Quad_engine"]
+size = Vector2(0.8, 0.8)
+
+[sub_resource type="Gradient" id="Grad_engine"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.7, 0.9, 1, 1, 0.2, 0.4, 1, 0)
+
+[sub_resource type="SphereMesh" id="Sphere_shield"]
+radius = 3.4
+height = 6.8
+radial_segments = 24
+rings = 12
+
+[sub_resource type="StandardMaterial3D" id="Mat_shield"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(0.3, 0.6, 1.0, 0.22)
+emission_enabled = true
+emission = Color(0.3, 0.6, 1.0, 1)
+emission_energy_multiplier = 1.4
+cull_mode = 1
+rim_enabled = true
+rim = 0.9
+
+[node name="Player" type="CharacterBody3D" groups=["player"]]
+collision_layer = 1
+collision_mask = 2
+script = ExtResource("1")
+cruise_speed = 16.0
+fire_rate = 0.1
+bullet_speed = 90.0
+max_health = 6
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_player")
+
+[node name="Shield" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("Sphere_shield")
+surface_material_override/0 = SubResource("Mat_shield")
+
+[node name="MeshPivot" type="Node3D" parent="."]
+
+; Model nose is -X; rotate -90° about Y so it faces -Z (forward), scaled to ~4m.
+[node name="SpaceshipModel" parent="MeshPivot" instance=ExtResource("2")]
+transform = Transform3D(0, 0, 4, 0, 4, 0, -4, 0, 0, 0, 0, 0)
+
+[node name="MuzzleFlash" type="OmniLight3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.6)
+light_color = Color(0.5, 0.85, 1, 1)
+light_energy = 0.0
+omni_range = 9.0
+
+[node name="EngineTrail" type="CPUParticles3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.2)
+amount = 24
+lifetime = 0.45
+mesh = SubResource("Quad_engine")
+material_override = SubResource("Mat_engine")
+direction = Vector3(0, 0, 1)
+spread = 12.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 6.0
+initial_velocity_max = 10.0
+scale_amount_min = 0.6
+scale_amount_max = 1.2
+color_ramp = SubResource("Grad_engine")
+
+[node name="Muzzles" type="Node3D" parent="MeshPivot"]
+
+[node name="MuzzleL" type="Marker3D" parent="MeshPivot/Muzzles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0.0, -2.4)
+
+[node name="MuzzleR" type="Marker3D" parent="MeshPivot/Muzzles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.0, -2.4)
+
+[node name="InvincibilityTimer" type="Timer" parent="."]
+wait_time = 1.2
+one_shot = true
+
+[node name="FireTimer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true

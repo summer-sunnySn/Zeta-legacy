@@ -1,0 +1,23 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3]
+
+[ext_resource type="Shader" path="res://shaders/moon_terrain.gdshader" id="1_moon_shader"]
+[ext_resource type="Texture2D" path="res://textures/moon/moon_albedo.jpg" id="2_albedo"]
+[ext_resource type="Texture2D" path="res://textures/moon/moon_normal.png" id="3_normal"]
+[ext_resource type="Texture2D" path="res://textures/moon/moon_roughness.jpg" id="4_rough"]
+[ext_resource type="Texture2D" path="res://textures/moon/moon_disp.png" id="5_disp"]
+[ext_resource type="Texture2D" path="res://textures/moon/moon_ao.jpg" id="6_ao"]
+
+[resource]
+shader = ExtResource("1_moon_shader")
+shader_parameter/albedo_texture = ExtResource("2_albedo")
+shader_parameter/normal_map = ExtResource("3_normal")
+shader_parameter/roughness_map = ExtResource("4_rough")
+shader_parameter/ao_map = ExtResource("6_ao")
+shader_parameter/displacement_map = ExtResource("5_disp")
+shader_parameter/texture_scale = 8.0
+shader_parameter/displacement_scale = 0.0
+shader_parameter/normal_strength = 1.2
+shader_parameter/detail_scale = 32.0
+shader_parameter/detail_strength = 0.35
+shader_parameter/dust_brightness = 0.08
+shader_parameter/dust_power = 1.5

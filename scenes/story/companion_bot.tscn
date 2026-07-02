@@ -1,0 +1,84 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/story/companion_bot.gd" id="1_bot"]
+
+; ─── Materials ──────────────────────────────────────────────────────────────
+[sub_resource type="StandardMaterial3D" id="Mat_shell"]
+albedo_color = Color(0.86, 0.89, 0.94, 1)
+metallic = 0.65
+roughness = 0.32
+
+[sub_resource type="StandardMaterial3D" id="Mat_eye"]
+shading_mode = 0
+albedo_color = Color(0.3, 0.85, 1.0, 1)
+emission_enabled = true
+emission = Color(0.35, 0.9, 1.0, 1)
+emission_energy_multiplier = 5.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_ring"]
+shading_mode = 0
+albedo_color = Color(0.2, 0.7, 1.0, 1)
+emission_enabled = true
+emission = Color(0.25, 0.75, 1.0, 1)
+emission_energy_multiplier = 2.2
+
+[sub_resource type="StandardMaterial3D" id="Mat_dark"]
+albedo_color = Color(0.12, 0.13, 0.16, 1)
+metallic = 0.5
+roughness = 0.45
+
+; ─── Meshes ─────────────────────────────────────────────────────────────────
+[sub_resource type="SphereMesh" id="Mesh_shell"]
+radius = 0.32
+height = 0.64
+
+[sub_resource type="SphereMesh" id="Mesh_eye"]
+radius = 0.13
+height = 0.26
+
+[sub_resource type="TorusMesh" id="Mesh_ring"]
+inner_radius = 0.30
+outer_radius = 0.40
+
+[sub_resource type="BoxMesh" id="Mesh_gun"]
+size = Vector3(0.1, 0.1, 0.42)
+
+[sub_resource type="BoxMesh" id="Mesh_guntip"]
+size = Vector3(0.08, 0.08, 0.1)
+
+; ─── Scene Graph ────────────────────────────────────────────────────────────
+[node name="CompanionBot" type="Node3D"]
+script = ExtResource("1_bot")
+
+[node name="ModelPivot" type="Node3D" parent="."]
+
+[node name="Shell" type="MeshInstance3D" parent="ModelPivot"]
+mesh = SubResource("Mesh_shell")
+surface_material_override/0 = SubResource("Mat_shell")
+
+[node name="Ring" type="MeshInstance3D" parent="ModelPivot"]
+mesh = SubResource("Mesh_ring")
+surface_material_override/0 = SubResource("Mat_ring")
+
+[node name="Eye" type="MeshInstance3D" parent="ModelPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.28)
+mesh = SubResource("Mesh_eye")
+surface_material_override/0 = SubResource("Mat_eye")
+
+[node name="GunArm" type="MeshInstance3D" parent="ModelPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26, -0.1, -0.12)
+mesh = SubResource("Mesh_gun")
+surface_material_override/0 = SubResource("Mat_dark")
+
+[node name="GunTip" type="MeshInstance3D" parent="ModelPivot/GunArm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.26)
+mesh = SubResource("Mesh_guntip")
+surface_material_override/0 = SubResource("Mat_eye")
+
+[node name="Muzzle" type="Marker3D" parent="ModelPivot/GunArm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
+
+[node name="Glow" type="OmniLight3D" parent="ModelPivot"]
+light_color = Color(0.4, 0.85, 1.0, 1)
+light_energy = 0.5
+omni_range = 4.0

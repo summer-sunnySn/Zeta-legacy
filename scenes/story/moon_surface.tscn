@@ -1,0 +1,172 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/story/moon_surface.gd" id="1_moon"]
+[ext_resource type="PackedScene" path="res://scenes/story/alina.tscn" id="2_alina"]
+[ext_resource type="Script" path="res://scripts/story/foot_camera.gd" id="3_cam"]
+[ext_resource type="Script" path="res://scripts/story/foot_hud.gd" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/story/moon_terrain_setup.gd" id="6_terrain_setup"]
+[ext_resource type="Script" path="res://scripts/story/subtitle_box.gd" id="7_subs"]
+
+; ─── Sky / Environment ─────────────────────────────────────────────────────
+; No atmosphere → pitch-black sky, only direct sunlight.
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+sky_top_color    = Color(0.0008, 0.0008, 0.001, 1)
+sky_horizon_color= Color(0.003, 0.003, 0.005, 1)
+ground_bottom_color   = Color(0.0005, 0.0005, 0.001, 1)
+ground_horizon_color  = Color(0.002, 0.002, 0.004, 1)
+sun_angle_max    = 3.0
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode      = 2
+sky                  = SubResource("Sky")
+ambient_light_source = 3
+ambient_light_color  = Color(0.06, 0.06, 0.07, 1)
+ambient_light_energy = 0.10
+glow_enabled         = true
+glow_intensity       = 0.30
+glow_strength        = 0.8
+glow_bloom           = 0.06
+dof_blur_near_enabled= false
+fog_enabled          = false
+dof_blur_far_enabled = false
+ssr_enabled          = false
+ssao_enabled         = false
+ssil_enabled         = false
+sdfgi_enabled        = false
+
+; ─── Terrain Mesh ───────────────────────────────────────────────────────────
+; FLAT lunar plain (the spherical moon was fragile / things floated). Large
+; enough to fill the horizon; craters + rocks are scattered on top at y=0.
+[sub_resource type="PlaneMesh" id="Mesh_terrain"]
+size = Vector2(700, 700)
+subdivide_width = 24
+subdivide_depth = 24
+
+; ─── Ground Physics (flat box, top face at y = 0) ────────────────────────────
+[sub_resource type="BoxShape3D" id="Shape_ground"]
+size = Vector3(700, 2, 700)
+
+; ─── Moon surface material ───────────────────────────────────────────────────
+; Lightweight StandardMaterial3D (no heavy shader / large textures) so the Moon
+; ALWAYS renders on the mobile renderer. The Sun + procedural rock/crater scatter
+; provide the surface detail.
+[sub_resource type="StandardMaterial3D" id="Mat_moon"]
+albedo_color = Color(0.52, 0.52, 0.55, 1)
+metallic = 0.0
+roughness = 0.96
+specular_mode = 1
+ao_light_affect = 0.5
+
+; ─── Earth (visible in the black sky) ───────────────────────────────────
+[sub_resource type="SphereMesh" id="Mesh_earth"]
+radius = 45.0
+height = 90.0
+radial_segments = 32
+rings = 16
+
+[sub_resource type="StandardMaterial3D" id="Mat_earth"]
+albedo_color          = Color(0.15, 0.35, 0.70, 1)
+emission_enabled      = true
+emission              = Color(0.20, 0.45, 0.85, 1)
+emission_energy_multiplier = 0.8
+roughness             = 0.7
+
+; ─── Scene Graph ───────────────────────────────────────────────────────────
+[node name="MoonSurface" type="Node3D"]
+script = ExtResource("1_moon")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+; ── Sun (harsh, sharp lunar shadows, no atmosphere) ─────────────────────────
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.30, 0.403, 0.0, 0.804, 0.595, -0.5, -0.516, 0.697, 0, 0, 0)
+light_energy    = 2.2
+light_color     = Color(1.0, 0.99, 0.97, 1)
+shadow_enabled  = true
+shadow_bias     = 0.1
+shadow_normal_bias = 1.5
+angular_distance= 0.5
+
+; ── Earth (visible in the black sky) ──────────────────────────────────────────
+[node name="Earth" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 140, 150, -360)
+mesh = SubResource("Mesh_earth")
+surface_material_override/0 = SubResource("Mat_earth")
+
+; ── Terrain (visual + shader displacement) ───────────────────────────────────
+[node name="Terrain" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask  = 1
+
+[node name="TerrainMesh" type="MeshInstance3D" parent="Terrain"]
+mesh = SubResource("Mesh_terrain")
+material_override = SubResource("Mat_moon")
+
+[node name="TerrainCollision" type="CollisionShape3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+shape = SubResource("Shape_ground")
+
+; ── Procedural Scatter (rocks, craters, regolith dust) ─────────────────────
+[node name="TerrainSetup" type="Node" parent="."]
+script = ExtResource("6_terrain_setup")
+
+; ── Player ──────────────────────────────────────────────────────────────────
+; Spawn at Moon's north pole (0, radius, 0) slightly above surface.
+[node name="Alina" parent="." instance=ExtResource("2_alina")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+; ── Camera ─────────────────────────────────────────────────────────────────
+[node name="FootCamera" type="Node3D" parent="."]
+script = ExtResource("3_cam")
+
+[node name="Camera3D" type="Camera3D" parent="FootCamera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 5.5)
+fov = 68.0
+near = 0.1
+far  = 2500.0
+
+; ── HUD ────────────────────────────────────────────────────────────────────
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+
+[node name="FootHUD" type="Control" parent="HUDLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("4_hud")
+
+; ── Cinematic overlay (crash-arrival cutscene: fade + subtitles) ───────────
+; Higher layer than the HUD so the arrival sequence draws on top.
+[node name="CinematicLayer" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="Fade" type="ColorRect" parent="CinematicLayer"]
+anchors_preset = 15
+anchor_right  = 1.0
+anchor_bottom = 1.0
+color        = Color(0, 0, 0, 1)
+mouse_filter = 2
+
+[node name="SubtitleBox" type="Control" parent="CinematicLayer"]
+anchors_preset = 15
+anchor_right  = 1.0
+anchor_bottom = 1.0
+mouse_filter  = 2
+script = ExtResource("7_subs")
+
+[node name="SkipHint" type="Label" parent="CinematicLayer"]
+visible       = false
+anchors_preset = 1
+anchor_left   = 1.0
+anchor_right  = 1.0
+offset_left   = -160.0
+offset_top    = 14.0
+offset_right  = -16.0
+offset_bottom = 44.0
+text          = "SKIP  ⏭"
+horizontal_alignment = 2
+modulate      = Color(1, 1, 1, 0.55)
