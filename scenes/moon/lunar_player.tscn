@@ -1,0 +1,107 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/moon/lunar_player.gd" id="1_player"]
+
+[sub_resource type="CapsuleShape3D" id="Shape_player"]
+radius = 0.45
+height = 1.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_suit"]
+albedo_color = Color(0.9, 0.9, 0.92, 1)
+roughness = 0.65
+metallic = 0.1
+
+[sub_resource type="StandardMaterial3D" id="Mat_visor"]
+albedo_color = Color(0.08, 0.08, 0.1, 1)
+metallic = 0.95
+roughness = 0.15
+
+[sub_resource type="StandardMaterial3D" id="Mat_plss"]
+albedo_color = Color(0.85, 0.45, 0.15, 1)
+roughness = 0.6
+
+[sub_resource type="CapsuleMesh" id="Mesh_body"]
+radius = 0.38
+height = 1.55
+
+[sub_resource type="SphereMesh" id="Mesh_helmet"]
+radius = 0.32
+height = 0.64
+
+[sub_resource type="BoxMesh" id="Mesh_visor"]
+size = Vector3(0.36, 0.2, 0.15)
+
+[sub_resource type="BoxMesh" id="Mesh_backpack"]
+size = Vector3(0.52, 0.65, 0.3)
+
+[sub_resource type="ParticleProcessMaterial" id="PPM_dust"]
+emission_shape = 1
+emission_sphere_radius = 0.2
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 0.6
+initial_velocity_max = 1.8
+gravity = Vector3(0, -1.62, 0)
+scale_min = 0.3
+scale_max = 0.8
+color = Color(0.7, 0.7, 0.73, 0.25)
+
+[sub_resource type="StandardMaterial3D" id="Mat_dust"]
+shading_mode = 0
+transparency = 1
+billboard_mode = 1
+albedo_color = Color(0.75, 0.75, 0.78, 0.25)
+
+[sub_resource type="QuadMesh" id="Mesh_dust_quad"]
+material = SubResource("Mat_dust")
+size = Vector2(0.25, 0.25)
+
+[node name="LunarPlayer" type="CharacterBody3D" groups=["player"]]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("Shape_player")
+
+[node name="MeshPivot" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="MeshInstance3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+mesh = SubResource("Mesh_body")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="Helmet" type="MeshInstance3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68, 0)
+mesh = SubResource("Mesh_helmet")
+surface_material_override/0 = SubResource("Mat_suit")
+
+[node name="Visor" type="MeshInstance3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68, -0.22)
+mesh = SubResource("Mesh_visor")
+surface_material_override/0 = SubResource("Mat_visor")
+
+[node name="PLSS_Pack" type="MeshInstance3D" parent="MeshPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0.32)
+mesh = SubResource("Mesh_backpack")
+surface_material_override/0 = SubResource("Mat_plss")
+
+[node name="DustPuff" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+emitting = false
+amount = 12
+lifetime = 1.0
+one_shot = true
+explosiveness = 0.8
+process_material = SubResource("PPM_dust")
+draw_pass_1 = SubResource("Mesh_dust_quad")
+
+[node name="CameraArm" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 2.0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraArm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.0)
+fov = 65.0
+near = 0.1
+far = 4000.0
