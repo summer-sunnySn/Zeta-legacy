@@ -1,0 +1,173 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scripts/moon/moon_world.gd" id="1_world"]
+[ext_resource type="Shader" path="res://shaders/space_sky.gdshader" id="2_sky_shader"]
+[ext_resource type="Texture2D" path="res://textures/star_map.exr" id="3_star_map"]
+[ext_resource type="Script" path="res://scripts/moon/celestial_bodies.gd" id="4_celestial"]
+[ext_resource type="Shader" path="res://shaders/earth_atmosphere.gdshader" id="5_earth_shader"]
+[ext_resource type="Texture2D" path="res://textures/planets/2k_earth_daymap.jpg" id="6_earth_daymap"]
+[ext_resource type="Script" path="res://scripts/moon/floating_origin.gd" id="7_floating_origin"]
+[ext_resource type="Script" path="res://scripts/moon/lunar_terrain.gd" id="8_terrain"]
+[ext_resource type="Shader" path="res://shaders/regolith.gdshader" id="9_regolith_shader"]
+[ext_resource type="Texture2D" path="res://textures/moon/moon_albedo.jpg" id="10_albedo"]
+[ext_resource type="Texture2D" path="res://textures/moon/moon_normal.png" id="11_normal"]
+[ext_resource type="Texture2D" path="res://textures/moon/moon_roughness.jpg" id="12_roughness"]
+[ext_resource type="Script" path="res://scripts/moon/lunar_scatter.gd" id="13_scatter"]
+[ext_resource type="PackedScene" path="res://scenes/moon/lunar_player.tscn" id="14_player"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
+shader = ExtResource("2_sky_shader")
+shader_parameter/use_star_map = true
+shader_parameter/star_map_intensity = 1.0
+shader_parameter/star_density = 240.0
+shader_parameter/star_brightness_mult = 3.2
+shader_parameter/twinkle_speed = 2.4
+shader_parameter/milky_way_intensity = 0.25
+shader_parameter/star_map_texture = ExtResource("3_star_map")
+
+[sub_resource type="Sky" id="Sky_world"]
+sky_material = SubResource("ShaderMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_world"]
+background_mode = 2
+sky = SubResource("Sky_world")
+ambient_light_source = 1
+ambient_light_color = Color(0.005, 0.005, 0.01, 1)
+ambient_light_energy = 0.1
+tonemap_mode = 3
+tonemap_white = 6.0
+glow_enabled = true
+glow_intensity = 0.6
+glow_bloom = 0.12
+glow_hdr_threshold = 0.9
+glow_blend_mode = 0
+fog_enabled = false
+ssao_enabled = false
+ssil_enabled = false
+sdfgi_enabled = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_sun_flare"]
+size = Vector2(40, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flare"]
+shading_mode = 0
+transparency = 1
+blend_mode = 1
+billboard_mode = 1
+albedo_color = Color(1, 0.96, 0.88, 0.75)
+
+[sub_resource type="SphereMesh" id="SphereMesh_earth"]
+radius = 45.0
+height = 90.0
+radial_segments = 32
+rings = 16
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_earth"]
+render_priority = 0
+shader = ExtResource("5_earth_shader")
+shader_parameter/atmosphere_color = Color(0.24, 0.58, 1, 1)
+shader_parameter/atmosphere_edge_color = Color(0.45, 0.75, 1, 1)
+shader_parameter/rim_power = 3.2
+shader_parameter/rim_intensity = 1.8
+shader_parameter/night_terminator_softness = 0.15
+shader_parameter/sun_direction = Vector3(0.5, 0.35, 0.78)
+shader_parameter/day_texture = ExtResource("6_earth_daymap")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_regolith"]
+render_priority = 0
+shader = ExtResource("9_regolith_shader")
+shader_parameter/uv_scale = 0.08
+shader_parameter/detail_scale = 8.0
+shader_parameter/detail_normal_strength = 0.45
+shader_parameter/triplanar_sharpness = 4.0
+shader_parameter/slope_darken_start = 0.65
+shader_parameter/slope_darken_amount = 0.4
+shader_parameter/sun_direction = Vector3(0.5, 0.35, 0.78)
+shader_parameter/opposition_surge_strength = 0.75
+shader_parameter/opposition_surge_power = 14.0
+shader_parameter/albedo_texture = ExtResource("10_albedo")
+shader_parameter/normal_map = ExtResource("11_normal")
+shader_parameter/roughness_map = ExtResource("12_roughness")
+
+[node name="MoonWorld" type="Node3D"]
+script = ExtResource("1_world")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_world")
+
+[node name="FloatingOrigin" type="Node" parent="." node_paths=PackedStringArray("world_root")]
+script = ExtResource("7_floating_origin")
+threshold = 800.0
+world_root = NodePath("..")
+
+[node name="Celestial" type="Node3D" parent="." node_paths=PackedStringArray("sun_light", "earth_node", "earthshine_light", "sun_lens_flare")]
+script = ExtResource("4_celestial")
+sun_light = NodePath("Sun")
+earth_node = NodePath("Earth")
+earthshine_light = NodePath("Earthshine")
+sun_lens_flare = NodePath("SunFlare")
+
+[node name="Sun" type="DirectionalLight3D" parent="Celestial"]
+transform = Transform3D(0.852869, -0.286788, 0.436338, 0, 0.835807, 0.549023, -0.522123, -0.468245, 0.712833, 0, 0, 0)
+light_color = Color(1, 0.98, 0.95, 1)
+light_energy = 2.4
+shadow_enabled = true
+shadow_bias = 0.08
+shadow_normal_bias = 1.2
+directional_shadow_mode = 2
+directional_shadow_split_1 = 0.05
+directional_shadow_split_2 = 0.15
+directional_shadow_split_3 = 0.35
+directional_shadow_fade_start = 0.8
+directional_shadow_max_distance = 320.0
+
+[node name="Earthshine" type="DirectionalLight3D" parent="Celestial"]
+transform = Transform3D(0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, -0.5, 0.5, 0, 0, 0)
+light_color = Color(0.12, 0.22, 0.38, 1)
+light_energy = 0.12
+shadow_enabled = false
+
+[node name="SunFlare" type="MeshInstance3D" parent="Celestial"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 523.6, 658.8, 855.4)
+mesh = SubResource("QuadMesh_sun_flare")
+material_override = SubResource("StandardMaterial3D_flare")
+
+[node name="Earth" type="MeshInstance3D" parent="Celestial"]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 160, 220, -550)
+mesh = SubResource("SphereMesh_earth")
+material_override = SubResource("ShaderMaterial_earth")
+
+[node name="Terrain" type="Node3D" parent="."]
+script = ExtResource("8_terrain")
+chunk_size = 256.0
+grid_radius = 8
+collision_radius = 2
+material_override = SubResource("ShaderMaterial_regolith")
+
+[node name="LunarScatter" type="Node3D" parent="." node_paths=PackedStringArray("terrain")]
+script = ExtResource("13_scatter")
+terrain = NodePath("../Terrain")
+scatter_radius = 650.0
+
+[node name="Player" parent="." instance=ExtResource("14_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+
+[node name="Markers" type="Node3D" parent="."]
+
+[node name="PlayerShip" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 18)
+
+[node name="CrashSite_1" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 280, 0, 190)
+
+[node name="CrashSite_2" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -310, 0, 240)
+
+[node name="CrashSite_3" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 180, 0, -320)
+
+[node name="CrashSite_4" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -260, 0, -290)
+
+[node name="CrashSite_Leader" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 750, 0, 680)
